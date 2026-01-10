@@ -12,6 +12,7 @@ const signUpSchema = z.object({
     password: z.string(),
 });
 
+// signup route
 router.post('/signup', async (req, res) => {
     const result = signUpSchema.safeParse(req.body);
 
@@ -41,6 +42,7 @@ router.post('/signup', async (req, res) => {
     });
 });
 
+// signin route
 router.post('/signin', async (req, res) => {
     const { username, password } = req.body;
 
@@ -68,6 +70,7 @@ router.post('/signin', async (req, res) => {
     });
 });
 
+// bulk fetch route
 router.get('/bulk', async (req, res) => {
 
     const name = req.params.filter
