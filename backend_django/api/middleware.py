@@ -3,13 +3,14 @@ from django.conf import settings
 import jwt
 
 class BearerTokenMiddleware:
-    import ipdb; ipdb.set_trace();
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
+        PUBLIC_PATHS = ["/user/signin/", "/user/signup/"]
+        
         # Skip auth for admin & public endpoints
-        if request.path.startswith("/admin/"):
+        if request.path in PUBLIC_PATHS or request.path.startswith("/admin/"):
             return self.get_response(request)
 
         auth_header = request.headers.get("Authorization")
@@ -25,7 +26,7 @@ class BearerTokenMiddleware:
         try:
             payload = jwt.decode(
                 token,
-                settings.SECRET_KEY,
+                settings.JWT_SECRET_KEY,
                 algorithms=["HS256"]
             )
         except jwt.ExpiredSignatureError:
