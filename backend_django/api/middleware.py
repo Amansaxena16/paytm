@@ -8,7 +8,7 @@ class BearerTokenMiddleware:
 
     def __call__(self, request):
         PUBLIC_PATHS = ["/user/signin/", "/user/signup/"]
-        
+
         # Skip auth for admin & public endpoints
         if request.path in PUBLIC_PATHS or request.path.startswith("/admin/"):
             return self.get_response(request)
@@ -17,7 +17,7 @@ class BearerTokenMiddleware:
 
         if not auth_header or not auth_header.startswith("Bearer "):
             return JsonResponse(
-                {"detail": "Authorization header missing"},
+                {"detail": "No Token Found"},
                 status=401
             )
 

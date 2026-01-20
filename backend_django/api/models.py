@@ -13,3 +13,9 @@ class  Users(models.Model):
         return self.username
     
     
+class Account(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    balance = models.IntegerField(null=True, blank=True)
+    def __str__(self):
+        return self.balance

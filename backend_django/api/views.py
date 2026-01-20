@@ -63,3 +63,34 @@ class UserSignIn(APIView):
         
         return Response({"Incorrect Password with this Username!!"},status=status.HTTP_400_BAD_REQUEST)
         
+        
+class EditProfileView(APIView):
+    
+    def put(self, request):
+        id = request.user_id
+        if not id:
+            return Response({"error": "Could not find ID in the request"},status=status.HTTP_400_BAD_REQUEST)
+        
+        user = Users.objects.get(id=id)
+        if not user:
+            return Response({"error": "Could not find user with this ID"},status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = UsersSerializer(user, data = request.data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class FetchUserBulk(APIView):
+    
+    def get(sef, request):
+        
+        filter_name = request.GET.get('name')
+        users = Users.objects.filter(first_name__icontains=filter_name) or Users.objects.filter(last_name__icontains=filter_name)
+        if not users:
+            return Response({"error": "Could not find Users with this Sub string"},status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = UsersSerializer(users, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
