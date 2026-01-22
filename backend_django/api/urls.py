@@ -12,4 +12,8 @@ urlpatterns = [
     
     # Fetch Users based on User filter query
     path('fetch/user-bulk/', FetchUserBulk.as_view(), name='fetch_users_in_bulk'),
+    
+    # check balance
+    path('check/balance/', CheckBalanceView.as_view(), name='check_balance'),
+    path('balance/transfer/', BalanceTransferView.as_view(), name='transfer_money_btw_two_users'),
 ]

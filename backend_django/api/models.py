@@ -19,3 +19,18 @@ class Account(models.Model):
     balance = models.IntegerField(null=True, blank=True)
     def __str__(self):
         return self.balance
+    
+class Transaction(models.Model):
+    STATUS = [
+        ('SUCCESS', 'SUCCESS'),
+        ('INCOMPLETE', 'INCOMPLETE'),
+        ('FAILED', 'FAILED')
+    ]
+    
+    sender_id = models.UUIDField(null=True, blank=True)
+    receiver_id = models.UUIDField(null=True, blank=False)
+    status = models.CharField(choices=STATUS, null=True, blank=True)
+    amount = models.IntegerField(null=True, blank=True)
+    
+    def __str__(self):
+        return self.sender_id, self.receiver_id, self.status, self.amount
