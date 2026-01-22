@@ -18,19 +18,21 @@ class Account(models.Model):
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
     balance = models.IntegerField(null=True, blank=True)
     def __str__(self):
-        return self.balance
+        return f"Account({self.user_id}) - Balance: {self.balance}"
     
 class Transaction(models.Model):
-    STATUS = [
-        ('SUCCESS', 'SUCCESS'),
-        ('INCOMPLETE', 'INCOMPLETE'),
-        ('FAILED', 'FAILED')
-    ]
-    
-    sender_id = models.UUIDField(null=True, blank=True)
-    receiver_id = models.UUIDField(null=True, blank=False)
-    status = models.CharField(choices=STATUS, null=True, blank=True)
-    amount = models.IntegerField(null=True, blank=True)
-    
+
+    class Status(models.TextChoices):
+        SUCCESS = "SUCCESS", "SUCCESS"
+        INCOMPLETE = "INCOMPLETE", "INCOMPLETE"
+        FAILED = "FAILED", "FAILED"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sender = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, related_name="debits")
+    receiver = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, related_name="credits")
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.CharField(max_length=20,choices=Status.choices,default=Status.INCOMPLETE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        return self.sender_id, self.receiver_id, self.status, self.amount
+        return f"{self.sender_id} -> {self.receiver_id} | {self.amount} | {self.status}"

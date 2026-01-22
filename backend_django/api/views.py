@@ -195,8 +195,8 @@ class BalanceTransferView(APIView):
                 receiver_account.save()
 
                 Transaction.objects.create(
-                    sender_id=sender_id,
-                    receiver_id=receiver_id,
+                    sender_id=sender_account.id,
+                    receiver_id=receiver_account.id,
                     amount=amount,
                     status="SUCCESS"
                 )
