@@ -48,12 +48,25 @@ export const SignInForm: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await signIn(formData);
-      if (response.success) {
+      if (response.message) {
         setAlert({
           type: 'success',
           title: 'Success!',
           message: 'Signed in successfully. Redirecting to dashboard...'
         });
+        if (!response.token){
+          setAlert({
+            type: 'error',
+            title: 'Token Not Found!',
+            message: 'Could not find Token Sign In again!!'
+          });
+          setTimeout(() => {
+            window.location.href = '/sigin';
+          }, 1000);
+          return
+        }
+
+        localStorage.setItem('access_token', response.token)
         // Redirect to dashboard after 1 second
         setTimeout(() => {
           window.location.href = '/dashboard';

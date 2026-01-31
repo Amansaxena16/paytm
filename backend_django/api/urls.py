@@ -16,4 +16,7 @@ urlpatterns = [
     # check balance
     path('check/balance/', CheckBalanceView.as_view(), name='check_balance'),
     path('balance/transfer/', BalanceTransferView.as_view(), name='transfer_money_btw_two_users'),
+    
+    # Fetch Dashboard Data
+    path('get/dashbaord/data/', GetUserDashboardData.as_view(), name='get_user_dashboard_data'),
 ]

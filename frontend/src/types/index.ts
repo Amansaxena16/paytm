@@ -1,24 +1,4 @@
 // src/types/index.ts
-
-export interface User {
-    id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    balance?: number;
-  }
-  
-  export interface Transaction {
-    id: string;
-    senderId: string;
-    senderName: string;
-    receiverId: string;
-    receiverName: string;
-    amount: number;
-    status: 'pending' | 'completed' | 'failed';
-    date: string;
-    type: 'sent' | 'received';
-  }
   
   export interface AuthCredentials {
     username: string;
@@ -26,8 +6,8 @@ export interface User {
   }
   
   export interface SignUpData extends AuthCredentials {
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
   }
   
   export interface AlertProps {
@@ -38,8 +18,40 @@ export interface User {
   }
   
   export interface ApiResponse<T> {
-    success: boolean;
-    data?: T;
+    token?: string;
     message?: string;
     error?: string;
   }
+
+  // User object
+export interface User {
+  first_name: string;
+  last_name: string;
+  username: string;
+  created_at: string; // ISO string
+}
+
+// Account object
+export interface Account {
+  id: string;        // UUID
+  user_id: string;  // UUID
+  balance: number;
+}
+
+// Transaction object (adjust fields if you add more later)
+export interface Transaction {
+  id: string;
+  amount: string; // Decimal comes as string from backend
+  status: "SUCCESS" | "INCOMPLETE" | "FAILED";
+  sender_id?: string;
+  receiver_id?: string;
+  created_at: string;
+}
+
+// Dashboard API response
+export interface DashboardResponse {
+  message: string;
+  user: User;
+  account: Account;
+  transactions: Transaction[];
+}

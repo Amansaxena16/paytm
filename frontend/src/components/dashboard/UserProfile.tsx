@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -18,10 +18,20 @@ interface UserProfileProps {
 export const UserProfile: React.FC<UserProfileProps> = ({ user, onUpdate }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: user.firstName,
-    lastName: user.lastName
-  });
+    first_name: "",
+    last_name: "",
+  });  
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        first_name: user.first_name,
+        last_name: user.last_name,
+      });
+    }
+  }, [user]);
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,13 +59,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onUpdate }) => {
     }
   };
 
+  if (!user) {
+    return null; // or a loader if you want
+  }
+  
   return (
     <>
       <Card title="Profile" className="h-fit">
         <div className="space-y-4">
           <div className="flex items-center justify-center">
             <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-              {user.firstName[0]}{user.lastName[0]}
+              {user.first_name[0] || ""}{user.last_name[0] || ""}
             </div>
           </div>
 
@@ -66,11 +80,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onUpdate }) => {
             </div>
             <div>
               <p className="text-sm text-gray-600">First Name</p>
-              <p className="font-medium text-gray-900">{user.firstName}</p>
+              <p className="font-medium text-gray-900">{user.first_name}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Last Name</p>
-              <p className="font-medium text-gray-900">{user.lastName}</p>
+              <p className="font-medium text-gray-900">{user.last_name}</p>
             </div>
           </div>
 
@@ -93,16 +107,16 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onUpdate }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="First Name"
-            name="firstName"
+            name="first_name"
             type="text"
-            value={formData.firstName}
+            value={formData.first_name}
             onChange={handleChange}
           />
           <Input
             label="Last Name"
-            name="lastName"
+            name="last_name"
             type="text"
-            value={formData.lastName}
+            value={formData.last_name}
             onChange={handleChange}
           />
           <div className="flex gap-3 justify-end">

@@ -9,32 +9,35 @@ import { UserSearch } from '@/components/dashboard/UserSearch';
 import { SendMoneyModal } from '@/components/dashboard/SendMoneyModal';
 import { WalletActions } from '@/components/dashboard/WalletActions';
 import { TransactionList } from '@/components/dashboard/TransactionList';
-import { User, Transaction } from '@/types';
+import { User, DashboardResponse } from '@/types';
 import { mockCurrentUser, mockTransactions } from '@/utils/mockData';
-import { getTransactions } from '@/services/walletService';
+import { getDashboardData } from "@/services/UserService"
+import { Span } from 'next/dist/trace';
 
 export default function DashboardPage() {
   const [currentUser, setCurrentUser] = useState<User>(mockCurrentUser);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
+  const [dashboardData, setDashboardData] = useState<DashboardResponse | null>(null);
+  const [isLoadingDashboardData, setIsLoadingDashboardData] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isSendMoneyModalOpen, setIsSendMoneyModalOpen] = useState(false);
-
+  const token = localStorage.getItem('access_token')
   useEffect(() => {
-    fetchTransactions();
-  }, []);
+    fetchDashboardData();
+  }, [token]);
 
-  const fetchTransactions = async () => {
-    setIsLoadingTransactions(true);
+
+  const fetchDashboardData = async () => {
+    setIsLoadingDashboardData(true);
     try {
-      const response = await getTransactions();
-      if (response.success && response.data) {
-        setTransactions(response.data);
+      const response = await getDashboardData();
+      // debugger
+      if (response.message) {
+        setDashboardData(response);
       }
     } catch (error) {
       console.error('Failed to fetch transactions', error);
     } finally {
-      setIsLoadingTransactions(false);
+      setIsLoadingDashboardData(false);
     }
   };
 
@@ -44,8 +47,7 @@ export default function DashboardPage() {
   };
 
   const handleTransactionSuccess = () => {
-    fetchTransactions();
-    // In a real app, you would also refresh the balance
+    fetchDashboardData();
   };
 
   const handleUpdateProfile = (updatedUser: User) => {
@@ -89,12 +91,12 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column - User Profile */}
           <div className="lg:col-span-3">
-            <UserProfile user={currentUser} onUpdate={handleUpdateProfile} />
+            {dashboardData?.user && <UserProfile user={dashboardData.user} onUpdate={handleUpdateProfile} />}
           </div>
 
           {/* Center Column - Balance & Send Money */}
           <div className="lg:col-span-6 space-y-6">
-            <BalanceCard balance={currentUser.balance || 0} />
+            <BalanceCard balance={dashboardData?.account.balance || 0} />
             <UserSearch onSendMoney={handleSendMoney} />
           </div>
 
@@ -102,8 +104,8 @@ export default function DashboardPage() {
           <div className="lg:col-span-3 space-y-6">
             <WalletActions onSuccess={handleTransactionSuccess} />
             <TransactionList
-              transactions={transactions}
-              isLoading={isLoadingTransactions}
+              transactions={dashboardData?.transactions || []}
+              isLoading={isLoadingDashboardData}
             />
           </div>
         </div>

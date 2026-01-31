@@ -11,8 +11,8 @@ import Link from 'next/link';
 
 export const SignUpForm: React.FC = () => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     username: '',
     password: ''
   });
@@ -23,10 +23,10 @@ export const SignUpForm: React.FC = () => {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.firstName.trim()) {
+    if (!formData.first_name.trim()) {
       newErrors.firstName = 'First name is required';
     }
-    if (!formData.lastName.trim()) {
+    if (!formData.last_name.trim()) {
       newErrors.lastName = 'Last name is required';
     }
     if (!formData.username.trim()) {
@@ -60,15 +60,32 @@ export const SignUpForm: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await signUp(formData);
-      if (response.success) {
+      if (response.message) {
         setAlert({
           type: 'success',
           title: 'Success!',
-          message: 'Account created successfully. Redirecting to sign in...'
+          message: response.message || 'Account created successfully. Redirecting to sign in...'
         });
+
+        // fetch token from response and store it in local storage
+        const token = response.token
+        if (!token){
+          setAlert({
+            type: 'error',
+            title: 'Token Not Found!',
+            message: 'Account created successfully, but could not find token, Login in...'
+          });
+          setTimeout(() => {
+            window.location.href = '/signin';
+          }, 2000);
+          return
+        } 
+
+        localStorage.setItem('access_token', token)
+
         // Redirect to sign in after 2 seconds
         setTimeout(() => {
-          window.location.href = '/signin';
+          window.location.href = '/dashboard';
         }, 2000);
       } else {
         setAlert({
@@ -104,20 +121,20 @@ export const SignUpForm: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           label="First Name"
-          name="firstName"
+          name="first_name"
           type="text"
           placeholder="Enter your first name"
-          value={formData.firstName}
+          value={formData.first_name}
           onChange={handleChange}
           error={errors.firstName}
         />
 
         <Input
           label="Last Name"
-          name="lastName"
+          name="last_name"
           type="text"
           placeholder="Enter your last name"
-          value={formData.lastName}
+          value={formData.last_name}
           onChange={handleChange}
           error={errors.lastName}
         />

@@ -28,6 +28,7 @@ class Transaction(models.Model):
         FAILED = "FAILED", "FAILED"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, null=True, blank=True)
     sender = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, related_name="debits")
     receiver = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, related_name="credits")
     amount = models.DecimalField(max_digits=12, decimal_places=2)
@@ -35,4 +36,4 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.sender_id} -> {self.receiver_id} | {self.amount} | {self.status}"
+        return f"{self.sender} -> {self.receiver} | {self.amount} | {self.status}"

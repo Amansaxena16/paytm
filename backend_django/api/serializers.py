@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users
+from .models import *
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.hashers import make_password
@@ -56,3 +56,50 @@ class UsersSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["password"] = make_password(validated_data["password"])
         return super().create(validated_data)
+    
+
+class AccountSerializer(serializers.ModelSerializer):
+    user_id = serializers.UUIDField(source="user.id", read_only=True)
+
+    class Meta:
+        model = Account
+        fields = [
+            "id",
+            "user_id",
+            "balance",
+        ]
+    
+class TransactionSerializer(serializers.ModelSerializer):
+    sender_id = serializers.UUIDField(source="sender.id", read_only=True)
+    receiver_id = serializers.UUIDField(source="receiver.id", read_only=True)
+
+    sender = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        write_only=True
+    )
+    receiver = serializers.PrimaryKeyRelatedField(
+        queryset=Account.objects.all(),
+        write_only=True
+    )
+
+    class Meta:
+        model = Transaction
+        fields = [
+            "id",
+            "sender",
+            "receiver",
+            "sender_id",
+            "receiver_id",
+            "amount",
+            "status",
+            "created_at",
+        ]
+        read_only_fields = ["id", "status", "created_at"]
+
+class TransactionDetailSerializer(serializers.ModelSerializer):
+    sender = AccountSerializer(read_only=True)
+    receiver = AccountSerializer(read_only=True)
+
+    class Meta:
+        model = Transaction
+        fields = "__all__"

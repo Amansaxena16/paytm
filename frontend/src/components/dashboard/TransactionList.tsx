@@ -15,13 +15,13 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   transactions,
   isLoading = false
 }) => {
-  const getStatusColor = (status: Transaction['status']) => {
+  const getStatusColor = (status: Transaction['status']) => { 
     switch (status) {
-      case 'completed':
+      case 'SUCCESS':
         return 'bg-green-100 text-green-800';
-      case 'pending':
+      case 'INCOMPLETE':
         return 'bg-yellow-100 text-yellow-800';
-      case 'failed':
+      case 'FAILED':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -80,24 +80,24 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                       )}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 text-sm">
+                      {/* <p className="font-medium text-gray-900 text-sm">
                         {transaction.type === 'received' ? 'From' : 'To'}{' '}
                         {transaction.type === 'received' 
                           ? transaction.senderName 
                           : transaction.receiverName}
-                      </p>
+                      </p> */}
                       <p className="text-xs text-gray-500">
-                        {formatDate(transaction.date)}
+                        {formatDate(transaction.created_at)}
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={`font-semibold text-sm ${
+                  {/* <p className={`font-semibold text-sm ${
                     transaction.type === 'received' ? 'text-green-600' : 'text-gray-900'
                   }`}>
                     {transaction.type === 'received' ? '+' : '-'}₹{transaction.amount.toFixed(2)}
-                  </p>
+                  </p> */}
                   <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${getStatusColor(transaction.status)}`}>
                     {transaction.status}
                   </span>

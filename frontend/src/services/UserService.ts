@@ -111,3 +111,30 @@ export const getUserProfile = async (userId: string): Promise<ApiResponse<User>>
     };
   }
 };
+
+
+export const getDashboardData = async () => {
+  try {
+    const token = localStorage.getItem('access_token');
+    if (!token){
+      return {
+        success: false,
+        error: 'Could not find Access Tokken'
+      };
+    }
+
+    const response = await fetch(`${API_BASE_URL}/get/dashbaord/data/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    return await response.json();
+} catch(error) {
+  return {
+    success: false,
+    error: 'Failed to fetch dashboard data'
+  };
+}
+};

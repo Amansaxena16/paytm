@@ -65,6 +65,7 @@ class UserSignIn(APIView):
                 return Response({"error": "Could not generate token"},status=status.HTTP_400_BAD_REQUEST)
             
             return Response({
+                    "message": "Signed in successfully",
                     "token": token,
                     "user_id": user.id,
                 },status=status.HTTP_200_OK)
@@ -217,3 +218,43 @@ class BalanceTransferView(APIView):
                 {"error": f"Transfer failed: {str(e)}"},
                 status=500
             )
+            
+class GetUserDashboardData(APIView):
+    
+    def get(self, request):
+        try:
+                
+            user_id = request.user_id
+            if not user_id:
+                return Response({"error": "Could not find User ID, Login In again.."},status=status.HTTP_404_NOT_FOUND)
+            
+            # Fetched User data
+            user = Users.objects.get(id=user_id)
+            if not user:
+                return Response({"error": "Could not find User with the User ID"},status=status.HTTP_404_NOT_FOUND)
+            
+            user_serializer = UsersSerializer(user)
+            
+            # Fetching Account data
+            account = Account.objects.get(user=user_id)
+            if not account:
+                return Response({"Could not find Account of this User"},status=status.HTTP_404_NOT_FOUND)
+            
+            account_serializer = AccountSerializer(account)
+            
+            transaction = Transaction.objects.filter(account=account)
+            transaction_serializer = TransactionDetailSerializer(transaction, many=True)
+            
+            return Response({
+                "message": "Successfully Fetched Dashboard Data",
+                "user": user_serializer.data,
+                "account": account_serializer.data,
+                "transactions": transaction_serializer.data,
+            },status=status.HTTP_200_OK)
+        
+        except:
+            return Response({"error": "Got Error while fetching dashboard data"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+        
+        
